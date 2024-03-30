@@ -1,0 +1,32 @@
+---
+- name: Install java in Amazon linux
+  ansible.builtin.yum:
+    name: '{{ java_package }}'
+    state: present
+  when: ansible_os_family == 'RedHat'
+- name: Install java in Ubuntu linux
+  ansible.builtin.apt:
+    name: '{{ java_package_ubuntu }}'
+    state: present
+  when: ansible_os_family == 'Debian'
+- name: Download SonarQube
+  ansible.builtin.get_url:
+    url: https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-{{ sonarqube_version }}.zip
+    dest: /opt/
+    mode: "0644"
+- name: Extract SonarQube
+  ansible.builtin.unarchive:
+    src: /opt/sonarqube-{{ sonarqube_version }}.zip
+    dest: /opt/
+    remote_src: true
+    creates: /opt/sonarqube-{{ sonarqube_version }}
+- name: Rename SonarQube directory
+  ansible.builtin.command: mv /opt/sonarqube-{{ sonarqube_version }} /opt/sonarqube
+  args:
+    creates: /opt/sonarqube
+- name: Set up SonarQube as a service
+  ansible.builtin.template:
+    src: sonarqube.service.j2
+    dest: /etc/systemd/system/sonarqube.service
+    mode: '0777'
+  notify: Restart sonarqube

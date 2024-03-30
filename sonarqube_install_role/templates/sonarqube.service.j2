@@ -1,0 +1,20 @@
+[Unit]
+Description=SonarQube service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+
+Environment="SONAR_HOME=/opt/sonarqube"
+Environment="PATH=$SONAR_HOME/bin:$PATH"
+EnvironmentFile=-/etc/sysconfig/sonarqube
+
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+User=sonarqube
+Group=sonarqube
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
