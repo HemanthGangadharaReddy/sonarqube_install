@@ -1,6 +1,6 @@
 ---
-- name: Install Maven, Sonarqube and Nexus
+- name: Install Sonarqube
   hosts: demo
   become: true
   roles:
-    - install_sonarqube
+    - sonarqube_install_role
